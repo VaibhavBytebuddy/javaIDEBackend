@@ -1,0 +1,9 @@
+package com.java.ide.repository;
+
+import com.java.ide.model.CodeFile;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface FileRepository extends JpaRepository<CodeFile,Long> {
+}
