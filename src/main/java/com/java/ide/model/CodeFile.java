@@ -7,18 +7,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodeFile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String filename;
-    @Column(columnDefinition = "TEXT",nullable = false)
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 }
