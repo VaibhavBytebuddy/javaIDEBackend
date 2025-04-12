@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.*;
@@ -21,7 +22,7 @@ public class JavaExecutionService {
     @Value("${javaexec.timeout:5000}")
     private long timeoutMillis;
 
-    public ExecutionResult executeJavaCode(String code) {
+    public ExecutionResult executeJavaCode(String code, String input) {
         long startTime = System.currentTimeMillis();
         String className = extractClassName(code);
 
@@ -53,6 +54,14 @@ public class JavaExecutionService {
                     .directory(tempDir.toFile())
                     .redirectErrorStream(true)
                     .start();
+
+            // Write input to process if provided
+            if (input != null && !input.isEmpty()) {
+                try (OutputStream stdin = runProcess.getOutputStream()) {
+                    stdin.write(input.getBytes());
+                    stdin.flush();
+                }
+            }
 
             boolean runSuccess = runProcess.waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
             String output = new String(runProcess.getInputStream().readAllBytes());

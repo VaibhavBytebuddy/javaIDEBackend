@@ -1,0 +1,25 @@
+# Build stage
+FROM eclipse-temurin:21-jdk-jammy as builder
+WORKDIR /workspace
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
+# Runtime stage
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+# Copy the built JAR
+COPY --from=builder /workspace/target/*.jar app.jar
+
+# Create directory for Java execution files
+RUN mkdir -p /tmp/javaexec && \
+    chmod 777 /tmp/javaexec
+
+# Security - run as non-root user
+RUN useradd -m javauser && \
+    chown -R javauser:javauser /app
+USER javauser
+
+# Configure ports and entrypoint
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
